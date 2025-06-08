@@ -82,16 +82,14 @@ async def download_song_post(request: DownloadRequest):
 async def download_song_get(url: str = Query(..., description="YouTube URL to download as MP3")):
     ydl_opts = {
         **BASE_YDL_OPTS,
-        'format': 'bestaudio/best',  # Primary format
+        'format': 'bestaudio/best',  # Primary audio format
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '192',
-        }, {
-            'key': 'FFmpegVideoConvertor',  # Fallback to convert video to audio if needed
-            'preferredcodec': 'mp3',
         }],
         'postprocessor_args': ['-ar', '44100'],  # Set audio sample rate for compatibility
+        'fallback_to_first': True,  # Fallback to first available format if bestaudio fails
     }
     
     try:
